@@ -8,12 +8,14 @@ class Renderer implements Runnable {
     private BoardPane board;
     private int sleep;
     private CollisionModel collisionModel;
+    private Fruit fruit;
 
-    Renderer(BoardPane board, int fps, CollisionModel collisionModel, SnakeModel...snakes) {
+    Renderer(BoardPane board, int fps, CollisionModel collisionModel, Fruit fruit, SnakeModel...snakes) {
         this.board = board;
         this.snakes = snakes;
         this.sleep = (int)(1.0/fps*1000);
         this.collisionModel = collisionModel;
+        this.fruit = fruit;
     }
 
     private void render(){
@@ -27,6 +29,8 @@ class Renderer implements Runnable {
                 board.draw(point, snake.getBodyColor());
             }
         }
+
+        board.draw(fruit.getPosition(), Color.RED);
 
         /*for (int row = 0; row < board.getSizeY(); row++) {
             for (int column = 0; column < board.getSizeX(); column++){

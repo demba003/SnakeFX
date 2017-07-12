@@ -30,9 +30,11 @@ public class GameController implements Initializable, EventHandler<KeyEvent>{
 
         collisionModel = new CollisionModel();
 
-        snake = new SnakeModel(new Point(5,15), Color.ORANGE, collisionModel);
-        Thread rendererThread = new Thread(new Renderer(board, 25, collisionModel, snake));
+        Fruit fruit = new Fruit(collisionModel);
+        snake = new SnakeModel(new Point(5,15), Color.ORANGE, collisionModel, fruit);
+        Thread rendererThread = new Thread(new Renderer(board, 25, collisionModel, fruit, snake));
         rendererThread.start();
+        score.textProperty().bind(snake.messageProperty());
     }
 
     @Override

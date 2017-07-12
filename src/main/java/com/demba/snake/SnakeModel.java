@@ -1,24 +1,27 @@
 package com.demba.snake;
 
+import javafx.concurrent.Task;
 import javafx.scene.paint.Color;
 
 import java.util.*;
 
-class SnakeModel {
+class SnakeModel extends Task<Void> {
     private LinkedList<Point> body;
     private Color bodyColor;
     private int sizeX = 31, sizeY = 22;
     private CollisionModel collisionModel;
     private Direction currentDirection;
     Thread movementThread;
-    int speed = 150;
+    private int speed = 150;
+    private Fruit fruit;
 
-    SnakeModel(Point initialPosition, Color bodyColor, CollisionModel collisionModel) {
+    SnakeModel(Point initialPosition, Color bodyColor, CollisionModel collisionModel, Fruit fruit) {
         this.bodyColor = bodyColor;
         this.body = new LinkedList<>();
         this.body.add(initialPosition);
         this.collisionModel = collisionModel;
-        movementThread = new Thread(new SnakeMovement());
+        this.fruit = fruit;
+        movementThread = new Thread(this);
         movementThread.start();
     }
 
@@ -59,7 +62,13 @@ class SnakeModel {
 
         if (!collisionModel.isColliding(new Point(newX, newY))) {
             body.add(new Point(newX, newY));
-            if(!(newX==5 && newY==0)) body.removeFirst();
+            collisionModel.set(new Point(newX, newY), true);
+            if(!(newX == fruit.getPosition().getX() && newY == fruit.getPosition().getY())) {
+                collisionModel.set(body.getFirst(), false);
+                body.removeFirst();
+            } else {
+                fruit.eat();
+            }
         } else {
             System.out.println("KONIEC");
             movementThread.interrupt();
@@ -74,18 +83,18 @@ class SnakeModel {
         return bodyColor;
     }
 
-    private class SnakeMovement implements Runnable {
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    Thread.sleep(speed);
-                } catch (InterruptedException e) {
-                    break;
-                }
-                if(currentDirection != null) move(currentDirection);
+    @Override
+    public Void call() {
+        while (true) {
+            try {
+                Thread.sleep(speed);
+            } catch (InterruptedException e) {
+                break;
             }
+            if(currentDirection != null) move(currentDirection);
+            updateMessage(String.valueOf(body.size()));
         }
+        return null;
     }
 }
 

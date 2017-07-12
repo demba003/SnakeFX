@@ -1,7 +1,7 @@
 package com.demba.snake;
 
 
-public class CollisionModel {
+class CollisionModel {
     private boolean[][] board;
     private int sizeX = 31, sizeY = 22;
 
@@ -17,11 +17,11 @@ public class CollisionModel {
         set(new Point(30,21), true);
     }
 
-    public void set(Point point, boolean present) {
+    void set(Point point, boolean present) {
         board[point.getY()][point.getX()] = present;
     }
 
-    public boolean isColliding(Point point){
+    boolean isColliding(Point point){
         return board[point.getY()][point.getX()];
     }
 }
