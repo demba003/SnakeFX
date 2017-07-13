@@ -1,5 +1,7 @@
 package com.demba.snake;
 
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.paint.Color;
 
@@ -11,14 +13,17 @@ class SnakeModel extends Task<Void> {
     private int sizeX = 31, sizeY = 22;
     private CollisionModel collisionModel;
     private Direction currentDirection;
-    Thread movementThread;
+    private Thread movementThread;
     private int speed = 150;
     private Fruit fruit;
+    private Point removedBlock;
 
     SnakeModel(Point initialPosition, Color bodyColor, CollisionModel collisionModel, Fruit fruit) {
         this.bodyColor = bodyColor;
         this.body = new LinkedList<>();
         this.body.add(initialPosition);
+        collisionModel.set(initialPosition, true);
+
         this.collisionModel = collisionModel;
         this.fruit = fruit;
         movementThread = new Thread(this);
@@ -29,7 +34,7 @@ class SnakeModel extends Task<Void> {
         currentDirection = direction;
     }
 
-    private void move(Direction direction){
+    synchronized private void move(Direction direction){
         int newX = body.getLast().getX();
         int newY = body.getLast().getY();
 
@@ -65,22 +70,32 @@ class SnakeModel extends Task<Void> {
             collisionModel.set(new Point(newX, newY), true);
             if(!(newX == fruit.getPosition().getX() && newY == fruit.getPosition().getY())) {
                 collisionModel.set(body.getFirst(), false);
+                removedBlock = body.getFirst();
                 body.removeFirst();
             } else {
                 fruit.eat();
             }
         } else {
             System.out.println("KONIEC");
+            removedBlock = null;
             movementThread.interrupt();
         }
     }
 
-    LinkedList<Point> getBody(){
+    synchronized LinkedList<Point> getBody(){
         return body;
     }
 
     Color getBodyColor() {
         return bodyColor;
+    }
+
+    Point getRemovedBlock() {
+        return removedBlock;
+    }
+
+    void endMovement() {
+        movementThread.interrupt();
     }
 
     @Override

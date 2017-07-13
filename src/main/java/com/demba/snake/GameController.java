@@ -18,8 +18,8 @@ public class GameController implements Initializable, EventHandler<KeyEvent>{
     @FXML
     private Label score;
 
-    private SnakeModel snake;
-    private CollisionModel collisionModel;
+    private SnakeModel snake, snake2;
+    private Thread rendererThread;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -28,11 +28,17 @@ public class GameController implements Initializable, EventHandler<KeyEvent>{
         boardPaneHolder.setFocusTraversable(true);
         boardPaneHolder.setOnKeyPressed(this);
 
-        collisionModel = new CollisionModel();
+        CollisionModel collisionModel = new CollisionModel();
+        Level level = new Level(collisionModel);
+        Fruit fruit = new Fruit(collisionModel, Color.RED);
 
-        Fruit fruit = new Fruit(collisionModel);
-        snake = new SnakeModel(new Point(5,15), Color.ORANGE, collisionModel, fruit);
-        Thread rendererThread = new Thread(new Renderer(board, 25, collisionModel, fruit, snake));
+        snake = new SnakeModel(new Point(4,4), Color.ORANGE, collisionModel, fruit);
+        snake2 = new SnakeModel(new Point(10,10), Color.GREEN, collisionModel, fruit);
+
+        SnakeModel snakes[] = {snake, snake2};
+        Fruit[] fruits = {fruit};
+
+        rendererThread = new Thread(new Renderer(board, fruits, snakes, level));
         rendererThread.start();
         score.textProperty().bind(snake.messageProperty());
     }
@@ -52,6 +58,26 @@ public class GameController implements Initializable, EventHandler<KeyEvent>{
             case RIGHT:
                 snake.setCurrentDirection(Direction.RIGHT);
                 break;
+
+            case W:
+                snake2.setCurrentDirection(Direction.UP);
+                break;
+            case S:
+                snake2.setCurrentDirection(Direction.DOWN);
+                break;
+            case A:
+                snake2.setCurrentDirection(Direction.LEFT);
+                break;
+            case D:
+                snake2.setCurrentDirection(Direction.RIGHT);
+                break;
         }
+    }
+
+    void onWindowClose() {
+        System.out.println("On close");
+        snake.endMovement();
+        snake2.endMovement();
+        rendererThread.interrupt();
     }
 }

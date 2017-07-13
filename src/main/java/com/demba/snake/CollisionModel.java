@@ -12,9 +12,6 @@ class CollisionModel {
                board[row][column] = false;
             }
         }
-
-        set(new Point(0,0), true);
-        set(new Point(30,21), true);
     }
 
     void set(Point point, boolean present) {

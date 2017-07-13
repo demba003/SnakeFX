@@ -17,10 +17,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("game.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("game.fxml"));
+        Parent root = fxmlLoader.load();
         primaryStage.setTitle("Snake");
         primaryStage.setScene(new Scene(root, 790, 590));
         primaryStage.setResizable(false);
+        GameController gameController = fxmlLoader.getController();
+        primaryStage.setOnCloseRequest(e -> gameController.onWindowClose());
 
         primaryStage.show();
     }
