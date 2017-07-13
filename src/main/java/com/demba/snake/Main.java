@@ -1,12 +1,12 @@
 package com.demba.snake;
 
 
+import com.demba.snake.game.GameController;
+import com.demba.snake.menu.MenuController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -17,13 +17,16 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("game.fxml"));
-        Parent root = fxmlLoader.load();
         primaryStage.setTitle("Snake");
-        primaryStage.setScene(new Scene(root, 790, 590));
         primaryStage.setResizable(false);
-        GameController gameController = fxmlLoader.getController();
-        primaryStage.setOnCloseRequest(e -> gameController.onWindowClose());
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("menu.fxml"));
+        MenuController menuController = new MenuController();
+        fxmlLoader.setController(menuController);
+        Parent root = fxmlLoader.load();
+
+        primaryStage.setScene(new Scene(root, 470, 210));
+        primaryStage.setOnCloseRequest(e -> menuController.onWindowClose());
 
         primaryStage.show();
     }

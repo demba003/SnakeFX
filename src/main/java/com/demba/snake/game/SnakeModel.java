@@ -1,7 +1,5 @@
-package com.demba.snake;
+package com.demba.snake.game;
 
-import javafx.beans.property.SimpleListProperty;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.paint.Color;
 
@@ -21,8 +19,22 @@ class SnakeModel extends Task<Void> {
     SnakeModel(Point initialPosition, Color bodyColor, CollisionModel collisionModel, Fruit fruit) {
         this.bodyColor = bodyColor;
         this.body = new LinkedList<>();
-        this.body.add(initialPosition);
-        collisionModel.set(initialPosition, true);
+
+        if (initialPosition != null) {
+            this.body.add(initialPosition);
+            collisionModel.set(initialPosition, true);
+        }
+        else {
+            Random generator = new Random();
+            while (true){
+                Point p = new Point(generator.nextInt(sizeX - 1), generator.nextInt(sizeY - 1));
+                if (!collisionModel.isColliding(p)){
+                    this.body.add(p);
+                    collisionModel.set(p, true);
+                    break;
+                }
+            }
+        }
 
         this.collisionModel = collisionModel;
         this.fruit = fruit;

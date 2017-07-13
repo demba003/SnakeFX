@@ -1,6 +1,7 @@
-package com.demba.snake;
+package com.demba.snake.game;
 
 
+import com.demba.snake.menu.SnakeParams;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,6 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable, EventHandler<KeyEvent>{
@@ -18,8 +20,15 @@ public class GameController implements Initializable, EventHandler<KeyEvent>{
     @FXML
     private Label score;
 
-    private SnakeModel snake, snake2;
     private Thread rendererThread;
+    private ArrayList<SnakeModel> snakes;
+    private int snakeCount;
+    private ArrayList<SnakeParams> snakeParams;
+
+    public GameController(int snakeCount, ArrayList<SnakeParams> snakeParams){
+        this.snakeCount = snakeCount;
+        this.snakeParams = snakeParams;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -27,39 +36,40 @@ public class GameController implements Initializable, EventHandler<KeyEvent>{
         boardPaneHolder.getChildren().add(board);
         boardPaneHolder.setFocusTraversable(true);
         boardPaneHolder.setOnKeyPressed(this);
+        snakes = new ArrayList<>();
 
         CollisionModel collisionModel = new CollisionModel();
         Level level = new Level(collisionModel);
         Fruit fruit = new Fruit(collisionModel, Color.RED);
 
-        snake = new SnakeModel(new Point(4,4), Color.ORANGE, collisionModel, fruit);
-        snake2 = new SnakeModel(new Point(10,10), Color.GREEN, collisionModel, fruit);
+        for (int i=0; i < snakeCount; i++) {
+            snakes.add(new SnakeModel(null, snakeParams.get(i).COLOR, collisionModel, fruit));
+        }
 
-        SnakeModel snakes[] = {snake, snake2};
         Fruit[] fruits = {fruit};
 
         rendererThread = new Thread(new Renderer(board, fruits, snakes, level));
         rendererThread.start();
-        score.textProperty().bind(snake.messageProperty());
+        score.textProperty().bind(snakes.get(0).messageProperty());
     }
 
     @Override
     public void handle(KeyEvent event) {
         switch (event.getCode()) {
             case UP:
-                snake.setCurrentDirection(Direction.UP);
+                snakes.get(0).setCurrentDirection(Direction.UP);
                 break;
             case DOWN:
-                snake.setCurrentDirection(Direction.DOWN);
+                snakes.get(0).setCurrentDirection(Direction.DOWN);
                 break;
             case LEFT:
-                snake.setCurrentDirection(Direction.LEFT);
+                snakes.get(0).setCurrentDirection(Direction.LEFT);
                 break;
             case RIGHT:
-                snake.setCurrentDirection(Direction.RIGHT);
+                snakes.get(0).setCurrentDirection(Direction.RIGHT);
                 break;
 
-            case W:
+            /*case W:
                 snake2.setCurrentDirection(Direction.UP);
                 break;
             case S:
@@ -70,14 +80,14 @@ public class GameController implements Initializable, EventHandler<KeyEvent>{
                 break;
             case D:
                 snake2.setCurrentDirection(Direction.RIGHT);
-                break;
+                break;*/
         }
     }
 
-    void onWindowClose() {
-        System.out.println("On close");
-        snake.endMovement();
-        snake2.endMovement();
+    public void onWindowClose() {
+        for (SnakeModel snake : snakes) {
+            snake.endMovement();
+        }
         rendererThread.interrupt();
     }
 }

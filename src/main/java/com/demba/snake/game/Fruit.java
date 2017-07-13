@@ -1,4 +1,4 @@
-package com.demba.snake;
+package com.demba.snake.game;
 
 
 import javafx.scene.paint.Color;
@@ -25,7 +25,6 @@ class Fruit {
                 position = p;
                 break;
             }
-
         }
     }
 

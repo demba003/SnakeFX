@@ -1,17 +1,18 @@
-package com.demba.snake;
+package com.demba.snake.game;
 
 
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 class Renderer implements Runnable {
-    private SnakeModel[] snakes;
+    private ArrayList<SnakeModel> snakes;
     private BoardPane board;
     private int sleep;
     private Fruit[] fruits;
 
-    Renderer(BoardPane board, Fruit[] fruits, SnakeModel[] snakes, Level level) {
+    Renderer(BoardPane board, Fruit[] fruits, ArrayList<SnakeModel> snakes, Level level) {
         this.board = board;
         this.sleep = (int)(1.0/100*1000);
         this.fruits = fruits;

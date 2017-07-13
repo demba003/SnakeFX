@@ -1,4 +1,4 @@
-package com.demba.snake;
+package com.demba.snake.game;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;

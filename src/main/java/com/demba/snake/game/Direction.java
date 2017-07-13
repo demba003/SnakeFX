@@ -1,4 +1,4 @@
-package com.demba.snake;
+package com.demba.snake.game;
 
 
 public enum Direction {
