@@ -1,7 +1,6 @@
 package com.demba.snake.game;
 
 
-import com.demba.snake.menu.SnakeParams;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -41,46 +40,22 @@ public class GameController implements Initializable, EventHandler<KeyEvent>{
         CollisionModel collisionModel = new CollisionModel();
         Level level = new Level(collisionModel);
         Fruit fruit = new Fruit(collisionModel, Color.RED);
+        Fruit[] fruits = {fruit};
 
         for (int i=0; i < snakeCount; i++) {
-            snakes.add(new SnakeModel(null, snakeParams.get(i).COLOR, collisionModel, fruit));
+            snakes.add(new SnakeModel(null, snakeParams.get(i).COLOR, collisionModel, fruit, snakeParams.get(i).KEYS));
         }
-
-        Fruit[] fruits = {fruit};
 
         rendererThread = new Thread(new Renderer(board, fruits, snakes, level));
         rendererThread.start();
+
         score.textProperty().bind(snakes.get(0).messageProperty());
     }
 
     @Override
     public void handle(KeyEvent event) {
-        switch (event.getCode()) {
-            case UP:
-                snakes.get(0).setCurrentDirection(Direction.UP);
-                break;
-            case DOWN:
-                snakes.get(0).setCurrentDirection(Direction.DOWN);
-                break;
-            case LEFT:
-                snakes.get(0).setCurrentDirection(Direction.LEFT);
-                break;
-            case RIGHT:
-                snakes.get(0).setCurrentDirection(Direction.RIGHT);
-                break;
-
-            /*case W:
-                snake2.setCurrentDirection(Direction.UP);
-                break;
-            case S:
-                snake2.setCurrentDirection(Direction.DOWN);
-                break;
-            case A:
-                snake2.setCurrentDirection(Direction.LEFT);
-                break;
-            case D:
-                snake2.setCurrentDirection(Direction.RIGHT);
-                break;*/
+        for (SnakeModel snakeModel : snakes) {
+            snakeModel.handleKeys(event.getCode());
         }
     }
 

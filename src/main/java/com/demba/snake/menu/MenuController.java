@@ -2,6 +2,8 @@ package com.demba.snake.menu;
 
 
 import com.demba.snake.game.GameController;
+import com.demba.snake.game.Keys;
+import com.demba.snake.game.SnakeParams;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -30,6 +32,7 @@ public class MenuController implements Initializable {
 
     private int snakeCount = 1;
     private ArrayList<SnakeParams> snakeParams;
+    private OptionsLine optionsLine;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -41,6 +44,9 @@ public class MenuController implements Initializable {
     }
 
     private void startButtonClicked() {
+        for (int i=0; i<snakeCount; i++){
+            snakeParams.add(new SnakeParams((Keys)optionsLine.getChoiceBoxes().get(i).getValue(), optionsLine.getColorPickers().get(i).getValue()));
+        }
 
         Stage stage = (Stage) options.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("game.fxml"));
@@ -64,8 +70,8 @@ public class MenuController implements Initializable {
         startButton.setDisable(false);
         snakeCount = 1;
         snakeParams = new ArrayList<>();
-        snakeParams.add(new SnakeParams(new Keys(KeyCode.UP,KeyCode.DOWN,KeyCode.LEFT,KeyCode.RIGHT), Color.AQUA));
         options.getChildren().removeAll(options.getChildren());
+        optionsLine = new OptionsLine(1);
         drawControls(1);
     }
 
@@ -73,24 +79,12 @@ public class MenuController implements Initializable {
         startButton.setDisable(false);
         snakeCount = 2;
         snakeParams = new ArrayList<>();
-        snakeParams.add(new SnakeParams(new Keys(KeyCode.UP,KeyCode.DOWN,KeyCode.LEFT,KeyCode.RIGHT), Color.AQUA));
-        snakeParams.add(new SnakeParams(new Keys(KeyCode.W,KeyCode.S,KeyCode.A,KeyCode.D), Color.DODGERBLUE));
         options.getChildren().removeAll(options.getChildren());
+        optionsLine = new OptionsLine(2);
         drawControls(2);
     }
 
     private void drawControls(int count) {
-        for(int i = 0; i < count; i++) {
-            HBox hBox = new HBox();
-            Label label = new Label("Player " + (i + 1) + " color: ");
-            label.setFont(new Font(14.0));
-            ColorPicker colorPicker = new ColorPicker();
-            Label label2 = new Label(" controls:");
-            label2.setFont(new Font(14.0));
-            ChoiceBox<Keys> choice = new ChoiceBox<>();
-            choice.getItems().addAll(new Keys(KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT), new Keys(KeyCode.W, KeyCode.S, KeyCode.A, KeyCode.D));
-            hBox.getChildren().addAll(label, colorPicker, label2, choice);
-            options.getChildren().add(hBox);
-        }
+        options.getChildren().add(optionsLine);
     }
 }

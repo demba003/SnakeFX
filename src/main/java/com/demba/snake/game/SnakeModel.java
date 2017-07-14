@@ -1,6 +1,7 @@
 package com.demba.snake.game;
 
 import javafx.concurrent.Task;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
 import java.util.*;
@@ -15,10 +16,12 @@ class SnakeModel extends Task<Void> {
     private int speed = 150;
     private Fruit fruit;
     private Point removedBlock;
+    private Keys keys;
 
-    SnakeModel(Point initialPosition, Color bodyColor, CollisionModel collisionModel, Fruit fruit) {
+    SnakeModel(Point initialPosition, Color bodyColor, CollisionModel collisionModel, Fruit fruit, Keys keys) {
         this.bodyColor = bodyColor;
         this.body = new LinkedList<>();
+        this.keys = keys;
 
         if (initialPosition != null) {
             this.body.add(initialPosition);
@@ -42,11 +45,7 @@ class SnakeModel extends Task<Void> {
         movementThread.start();
     }
 
-    void setCurrentDirection(Direction direction) {
-        currentDirection = direction;
-    }
-
-    synchronized private void move(Direction direction){
+   synchronized private void move(Direction direction){
         int newX = body.getLast().getX();
         int newY = body.getLast().getY();
 
@@ -88,7 +87,9 @@ class SnakeModel extends Task<Void> {
                 fruit.eat();
             }
         } else {
-            System.out.println("KONIEC");
+
+                System.out.println("KONIEC");
+
             removedBlock = null;
             movementThread.interrupt();
         }
@@ -122,6 +123,13 @@ class SnakeModel extends Task<Void> {
             updateMessage(String.valueOf(body.size()));
         }
         return null;
+    }
+
+    void handleKeys(KeyCode key) {
+        if(key == keys.UP) currentDirection = Direction.UP;
+        else if(key == keys.DOWN) currentDirection = Direction.DOWN;
+        else if(key == keys.LEFT) currentDirection = Direction.LEFT;
+        else if(key == keys.RIGHT) currentDirection = Direction.RIGHT;
     }
 }
 

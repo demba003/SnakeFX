@@ -1,7 +1,6 @@
 package com.demba.snake;
 
 
-import com.demba.snake.game.GameController;
 import com.demba.snake.menu.MenuController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +24,7 @@ public class Main extends Application {
         fxmlLoader.setController(menuController);
         Parent root = fxmlLoader.load();
 
-        primaryStage.setScene(new Scene(root, 470, 210));
+        primaryStage.setScene(new Scene(root, 480, 230));
         primaryStage.setOnCloseRequest(e -> menuController.onWindowClose());
 
         primaryStage.show();

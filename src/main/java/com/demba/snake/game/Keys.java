@@ -1,15 +1,15 @@
-package com.demba.snake.menu;
+package com.demba.snake.game;
 
 
 import javafx.scene.input.KeyCode;
 
 public class Keys {
-    public KeyCode UP;
-    public KeyCode DOWN;
-    public KeyCode LEFT;
-    public KeyCode RIGHT;
+    KeyCode UP;
+    KeyCode DOWN;
+    KeyCode LEFT;
+    KeyCode RIGHT;
 
-    Keys(KeyCode up, KeyCode down, KeyCode left, KeyCode right){
+    public Keys(KeyCode up, KeyCode down, KeyCode left, KeyCode right){
         this.UP = up;
         this.DOWN = down;
         this.LEFT = left;
