@@ -10,7 +10,7 @@ class Level{
     Level(CollisionModel collisionModel){
         this.collisionModel = collisionModel;
         map = new ArrayList<>();
-        load();
+        //load();
     }
 
     void load(){

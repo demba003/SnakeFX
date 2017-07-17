@@ -10,11 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -32,7 +28,7 @@ public class MenuController implements Initializable {
 
     private int snakeCount = 1;
     private ArrayList<SnakeParams> snakeParams;
-    private OptionsLine optionsLine;
+    private OptionsPane optionsLine;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -68,23 +64,20 @@ public class MenuController implements Initializable {
 
     private void singleButtonClicked(){
         startButton.setDisable(false);
-        snakeCount = 1;
-        snakeParams = new ArrayList<>();
-        options.getChildren().removeAll(options.getChildren());
-        optionsLine = new OptionsLine(1);
         drawControls(1);
     }
 
     private void multiButtonClicked(){
         startButton.setDisable(false);
-        snakeCount = 2;
-        snakeParams = new ArrayList<>();
-        options.getChildren().removeAll(options.getChildren());
-        optionsLine = new OptionsLine(2);
         drawControls(2);
     }
 
     private void drawControls(int count) {
+        startButton.setDisable(false);
+        snakeCount = count;
+        snakeParams = new ArrayList<>();
+        options.getChildren().removeAll(options.getChildren());
+        optionsLine = new OptionsPane(count);
         options.getChildren().add(optionsLine);
     }
 }

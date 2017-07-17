@@ -13,11 +13,11 @@ import javafx.scene.text.Font;
 import java.util.ArrayList;
 
 
-public class OptionsLine extends VBox {
+public class OptionsPane extends VBox {
     private ArrayList<ChoiceBox> choiceBoxes;
     private ArrayList<ColorPicker> colorPickers;
 
-    OptionsLine(int count) {
+    OptionsPane(int count) {
         choiceBoxes = new ArrayList<>();
         colorPickers = new ArrayList<>();
         for(int i = 0; i < count; i++) {

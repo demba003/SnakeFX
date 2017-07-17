@@ -1,10 +1,13 @@
 package com.demba.snake.game;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import javafx.concurrent.Task;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
+import java.io.*;
 import java.util.*;
+
 
 class SnakeModel extends Task<Void> {
     private LinkedList<Point> body;
@@ -13,15 +16,26 @@ class SnakeModel extends Task<Void> {
     private CollisionModel collisionModel;
     private Direction currentDirection;
     private Thread movementThread;
-    private int speed = 150;
+    private int speed = 110;
     private Fruit fruit;
     private Point removedBlock;
     private Keys keys;
+    private boolean pendingDirectionChange = false;
+    private boolean cheatmode = false;
+    //private InputStreamReader reader;
 
-    SnakeModel(Point initialPosition, Color bodyColor, CollisionModel collisionModel, Fruit fruit, Keys keys) {
+    SnakeModel(Point initialPosition, Color bodyColor, CollisionModel collisionModel, Fruit fruit, Keys keys){
         this.bodyColor = bodyColor;
         this.body = new LinkedList<>();
         this.keys = keys;
+
+        /*try {
+            reader = new InputStreamReader(new FileInputStream("file.txt"), "ASCII");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }*/
 
         if (initialPosition != null) {
             this.body.add(initialPosition);
@@ -45,11 +59,30 @@ class SnakeModel extends Task<Void> {
         movementThread.start();
     }
 
+    private Direction byte2Direction(int value){
+        Direction direction = null;
+        switch (value){
+            case 48:
+                direction = Direction.UP;
+                break;
+            case 49:
+                direction = Direction.DOWN;
+                break;
+            case 50:
+                direction = Direction.LEFT;
+                break;
+            case 51:
+                direction = Direction.RIGHT;
+                break;
+        }
+        return direction;
+    }
+
    synchronized private void move(Direction direction){
         int newX = body.getLast().getX();
         int newY = body.getLast().getY();
 
-        switch (direction) {
+       switch (direction) {
             case UP:
                 if (body.getLast().getY() - 1 < 0)
                     newY = sizeY - 1;
@@ -76,7 +109,7 @@ class SnakeModel extends Task<Void> {
                 break;
         }
 
-        if (!collisionModel.isColliding(new Point(newX, newY))) {
+       if (!collisionModel.isColliding(new Point(newX, newY))) {
             body.add(new Point(newX, newY));
             collisionModel.set(new Point(newX, newY), true);
             if(!(newX == fruit.getPosition().getX() && newY == fruit.getPosition().getY())) {
@@ -86,13 +119,13 @@ class SnakeModel extends Task<Void> {
             } else {
                 fruit.eat();
             }
-        } else {
+       } else {
 
-                System.out.println("KONIEC");
+            System.out.println("KONIEC");
 
             removedBlock = null;
-            movementThread.interrupt();
-        }
+            if (!cheatmode) movementThread.interrupt();
+       }
     }
 
     synchronized LinkedList<Point> getBody(){
@@ -119,17 +152,39 @@ class SnakeModel extends Task<Void> {
             } catch (InterruptedException e) {
                 break;
             }
+
+            /*try {
+                Direction direction = byte2Direction(reader.read());
+                if (direction != null) currentDirection = direction;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }*/
+
             if(currentDirection != null) move(currentDirection);
+            pendingDirectionChange = false;
             updateMessage(String.valueOf(body.size()));
         }
         return null;
     }
 
     void handleKeys(KeyCode key) {
-        if(key == keys.UP) currentDirection = Direction.UP;
-        else if(key == keys.DOWN) currentDirection = Direction.DOWN;
-        else if(key == keys.LEFT) currentDirection = Direction.LEFT;
-        else if(key == keys.RIGHT) currentDirection = Direction.RIGHT;
+        if(key == keys.UP
+                && !pendingDirectionChange
+                && currentDirection != Direction.DOWN)
+            currentDirection = Direction.UP;
+        else if(key == keys.DOWN
+                && !pendingDirectionChange
+                && currentDirection != Direction.UP)
+            currentDirection = Direction.DOWN;
+        else if(key == keys.LEFT
+                && !pendingDirectionChange
+                && currentDirection != Direction.RIGHT)
+            currentDirection = Direction.LEFT;
+        else if(key == keys.RIGHT
+                && !pendingDirectionChange
+                && currentDirection != Direction.LEFT)
+            currentDirection = Direction.RIGHT;
+        pendingDirectionChange = true;
     }
 }
 

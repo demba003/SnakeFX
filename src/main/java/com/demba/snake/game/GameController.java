@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
@@ -17,12 +18,13 @@ public class GameController implements Initializable, EventHandler<KeyEvent>{
     @FXML
     private Pane boardPaneHolder;
     @FXML
-    private Label score;
+    private HBox scoresBox;
 
     private Thread rendererThread;
     private ArrayList<SnakeModel> snakes;
     private int snakeCount;
     private ArrayList<SnakeParams> snakeParams;
+    private ScoreLabels scoreLabels;
 
     public GameController(int snakeCount, ArrayList<SnakeParams> snakeParams){
         this.snakeCount = snakeCount;
@@ -36,6 +38,8 @@ public class GameController implements Initializable, EventHandler<KeyEvent>{
         boardPaneHolder.setFocusTraversable(true);
         boardPaneHolder.setOnKeyPressed(this);
         snakes = new ArrayList<>();
+        scoreLabels = new ScoreLabels(snakeCount);
+        scoresBox.getChildren().add(scoreLabels);
 
         CollisionModel collisionModel = new CollisionModel();
         Level level = new Level(collisionModel);
@@ -49,7 +53,8 @@ public class GameController implements Initializable, EventHandler<KeyEvent>{
         rendererThread = new Thread(new Renderer(board, fruits, snakes, level));
         rendererThread.start();
 
-        score.textProperty().bind(snakes.get(0).messageProperty());
+        for (int i = 0; i < snakeCount; i++)
+            scoreLabels.getScoreLabels().get(i).textProperty().bind(snakes.get(i).messageProperty());
     }
 
     @Override
