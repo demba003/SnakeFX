@@ -1,11 +1,10 @@
 package com.demba.snake.game;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+
 import javafx.concurrent.Task;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
-import java.io.*;
 import java.util.*;
 
 
@@ -15,6 +14,7 @@ class SnakeModel extends Task<Void> {
     private int sizeX = 31, sizeY = 22;
     private CollisionModel collisionModel;
     private Direction currentDirection;
+    public int directionCode = 0;
     private Thread movementThread;
     private int speed = 110;
     private Fruit fruit;
@@ -22,20 +22,12 @@ class SnakeModel extends Task<Void> {
     private Keys keys;
     private boolean pendingDirectionChange = false;
     private boolean cheatmode = false;
-    //private InputStreamReader reader;
 
     SnakeModel(Point initialPosition, Color bodyColor, CollisionModel collisionModel, Fruit fruit, Keys keys){
         this.bodyColor = bodyColor;
         this.body = new LinkedList<>();
-        this.keys = keys;
-
-        /*try {
-            reader = new InputStreamReader(new FileInputStream("file.txt"), "ASCII");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }*/
+        if (keys != null)
+            this.keys = keys;
 
         if (initialPosition != null) {
             this.body.add(initialPosition);
@@ -53,32 +45,14 @@ class SnakeModel extends Task<Void> {
             }
         }
 
+
         this.collisionModel = collisionModel;
         this.fruit = fruit;
         movementThread = new Thread(this);
         movementThread.start();
     }
 
-    private Direction byte2Direction(int value){
-        Direction direction = null;
-        switch (value){
-            case 48:
-                direction = Direction.UP;
-                break;
-            case 49:
-                direction = Direction.DOWN;
-                break;
-            case 50:
-                direction = Direction.LEFT;
-                break;
-            case 51:
-                direction = Direction.RIGHT;
-                break;
-        }
-        return direction;
-    }
-
-   synchronized private void move(Direction direction){
+    synchronized private void move(Direction direction){
         int newX = body.getLast().getX();
         int newY = body.getLast().getY();
 
@@ -140,6 +114,12 @@ class SnakeModel extends Task<Void> {
         return removedBlock;
     }
 
+    int getCurrentDirectionCode() {
+        int value = directionCode;
+        directionCode = 0;
+        return value;
+    }
+
     void endMovement() {
         movementThread.interrupt();
     }
@@ -153,13 +133,6 @@ class SnakeModel extends Task<Void> {
                 break;
             }
 
-            /*try {
-                Direction direction = byte2Direction(reader.read());
-                if (direction != null) currentDirection = direction;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
-
             if(currentDirection != null) move(currentDirection);
             pendingDirectionChange = false;
             updateMessage(String.valueOf(body.size()));
@@ -168,19 +141,54 @@ class SnakeModel extends Task<Void> {
     }
 
     void handleKeys(KeyCode key) {
-        if(key == keys.UP
+        if (keys != null) {
+            if(key == keys.UP
+                    && !pendingDirectionChange
+                    && currentDirection != Direction.DOWN)
+            {
+                currentDirection = Direction.UP;
+                directionCode = 1;
+            }
+
+            else if(key == keys.DOWN
+                    && !pendingDirectionChange
+                    && currentDirection != Direction.UP)
+            {
+                currentDirection = Direction.DOWN;
+                directionCode = 2;
+            }
+            else if(key == keys.LEFT
+                    && !pendingDirectionChange
+                    && currentDirection != Direction.RIGHT)
+            {
+                currentDirection = Direction.LEFT;
+                directionCode = 3;
+            }
+            else if(key == keys.RIGHT
+                    && !pendingDirectionChange
+                    && currentDirection != Direction.LEFT)
+            {
+                currentDirection = Direction.RIGHT;
+                directionCode = 4;
+            }
+            pendingDirectionChange = true;
+        }
+    }
+
+    public void handleNetworkCode(int value) {
+        if(value == 1
                 && !pendingDirectionChange
                 && currentDirection != Direction.DOWN)
             currentDirection = Direction.UP;
-        else if(key == keys.DOWN
+        else if(value == 2
                 && !pendingDirectionChange
                 && currentDirection != Direction.UP)
             currentDirection = Direction.DOWN;
-        else if(key == keys.LEFT
+        else if(value == 3
                 && !pendingDirectionChange
                 && currentDirection != Direction.RIGHT)
             currentDirection = Direction.LEFT;
-        else if(key == keys.RIGHT
+        else if(value == 4
                 && !pendingDirectionChange
                 && currentDirection != Direction.LEFT)
             currentDirection = Direction.RIGHT;

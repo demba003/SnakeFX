@@ -14,7 +14,7 @@ class Renderer implements Runnable {
 
     Renderer(BoardPane board, Fruit[] fruits, ArrayList<SnakeModel> snakes, Level level) {
         this.board = board;
-        this.sleep = (int)(1.0/100*1000);
+        this.sleep = (int)(1.0/300*1000);
         this.fruits = fruits;
         this.snakes = snakes;
         renderLevel(level);

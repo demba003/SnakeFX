@@ -30,7 +30,7 @@
                   <Insets bottom="10.0" />
                </padding>
             </RadioButton>
-            <RadioButton fx:id="networkButton" disable="true" mnemonicParsing="false" text="Two Players (Network)" toggleGroup="$group">
+            <RadioButton fx:id="networkButton" mnemonicParsing="false" text="Two Players (Network)" toggleGroup="$group">
                <font>
                   <Font size="14.0" />
                </font>
